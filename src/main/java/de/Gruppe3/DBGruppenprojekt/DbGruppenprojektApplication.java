@@ -12,15 +12,15 @@ public class DbGruppenprojektApplication {
 		SpringApplication.run(DbGruppenprojektApplication.class, args);
 
 		
-		MariaDBConnection conn= new MariaDBConnection();
-		conn.startDB();
-		conn.connectToDatabase();
+		MariaDBConnection mariaDBConn= new MariaDBConnection();
+		mariaDBConn.startDB();
+		mariaDBConn.connectToDatabase();
 		
 		
 		
 		// killt die DB
 		Thread.sleep(100000);
-		conn.stopDB();
+		mariaDBConn.stopDB();
 
 	
 	
