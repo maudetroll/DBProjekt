@@ -13,13 +13,21 @@ public class Vehicle {
 	public int colorCode;
 	public String brand;
 	public int price;
+	public String extraEquipment;
 
+	public String getExtraEquipment() {
+		return extraEquipment;
+	}
+	public void setExtraEquipment(String extraEquipment) {
+		this.extraEquipment = extraEquipment;
+	}
 	public Vehicle() {
 		this.id = UUID.randomUUID().toString();
 		this.ps = (int) (Math.random() * 99 + 1);
 		this.colorCode = (int) (Math.random() * 9 + 1);
-		this.brand = "VW";
+		this.brand = "Mercedes";
 		this.price = (int) (Math.random() * 19999 + 1);
+		this.extraEquipment= "hi";
 	}
 	public Vehicle(String id) {
 		this.id = id;

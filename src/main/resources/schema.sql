@@ -9,5 +9,6 @@ CREATE TABLE vehicles
    Color varChar(255) NOT NULL,
    Brand varChar(255) NOT NULL,
    Price Integer NOT NULL,
+   ExtraEquipment varChar(255),
    PRIMARY KEY (ID)
 );

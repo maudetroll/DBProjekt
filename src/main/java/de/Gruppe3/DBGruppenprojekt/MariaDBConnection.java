@@ -3,7 +3,9 @@ package de.Gruppe3.DBGruppenprojekt;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import ch.qos.logback.classic.db.DBHelper;
@@ -14,7 +16,7 @@ import ch.vorburger.mariadb4j.springframework.MariaDB4jSpringService;
 
 public class MariaDBConnection {
 	
-	public static final String statement= "INSERT INTO vehicles(PS,Color,brand,price) VALUES (?,?,?,?)";
+	public static final String statement= "INSERT INTO vehicles(PS,Color,brand,price,extraequipment) VALUES (?,?,?,?,?)";
 	public MariaDB4jSpringService db= new MariaDB4jSpringService();
 	public Vehicle[] vehicles;
 	
@@ -36,6 +38,8 @@ public class MariaDBConnection {
                 System.out.println("Datenbank wird gelesen");
                 System.out.println("*********************************************");
                 System.out.println("");
+                double timeToRead= readDatabase(conn);
+                System.out.println("Ergebnis:"+ timeToRead+ " Nanosekunden");
                 System.out.println("*********************************************");
                 System.out.println("Datenbank wird geupdatet");
                 System.out.println("*********************************************");
@@ -45,8 +49,8 @@ public class MariaDBConnection {
                 System.out.println("*********************************************");
                 System.out.println("Datenbank wird gelöscht");
                 System.out.println("*********************************************");
-                double timeToDelete=deleteDatabase(conn);
-                System.out.println("Ergebnis:"+ timeToDelete+ " Nanosekunden");
+                //double timeToDelete=deleteDatabase(conn);
+                //System.out.println("Ergebnis:"+ timeToDelete+ " Nanosekunden");
                 
 
             }
@@ -75,56 +79,74 @@ public class MariaDBConnection {
 		
 		double timeDifference=0.0;
 		vehicles = new Vehicle[2000];
+		
 		for (int i = 0; i < vehicles.length; i++) {
 			vehicles[i] = new Vehicle();
 		}
+		vehicles[1336].setExtraEquipment("SL AMG 63");
+
         for (Vehicle v: vehicles) {
         	PreparedStatement pS= conn.prepareStatement(statement);
+        	conn.setAutoCommit(false);
         	pS.setInt(1, v.getPs());
         	pS.setInt(2,v.getColorCode());
         	pS.setString(3, v.getBrand());
         	pS.setInt(4, v.getPrice());
-        	
-        	double beforeExecution= System.nanoTime();
+        	pS.setString(5, v.getExtraEquipment());
+        
             pS.executeUpdate();
-            double afterExecution= System.nanoTime();
-            timeDifference= timeDifference+ (afterExecution-beforeExecution);
         }
+		double beforeExecution= System.nanoTime();
+        conn.commit();
+        double afterExecution= System.nanoTime();
+        timeDifference= timeDifference+ (afterExecution-beforeExecution);
+        
 		return (Double) timeDifference;
 	}
 	
-	public double readDatabase(Connection conn) {
+	public double readDatabase(Connection conn) throws SQLException {
+		Statement statement= conn.createStatement();
+
+		double beforeExecution= System.nanoTime();
+		ResultSet rs=statement.executeQuery( "select * from " + "vehicles"+ " WHERE ExtraEquipment LIKE "+ "'SL AMG 63'");
+		double afterExecution= System.nanoTime();
 		
-		return (Double) null;
+		while (rs.next()) {
+			if (!rs.getString(6).equals("SL AMG 63")) {
+				System.err.println("NICHT GEFUNDEN");
+			}
+			System.out.println(rs.getString(6));
+		}
+		
+		return (Double) afterExecution-beforeExecution;
 	}
 	
 	public double updateDatabase(Connection conn) throws SQLException {
 		
 		double timeDifference=0.0;
 		
-		String statementUpdate= "UPDATE vehicles SET PS = ?, Color = ?, brand = ?, price=?";
-		
-	
-		
+		String statementUpdate= "UPDATE vehicles SET PS = ?, Color = ?, brand = ?, price=?, extraequipment=?";
+				
         for (Vehicle v: vehicles) {
         	PreparedStatement pS= conn.prepareStatement(statementUpdate);
         	pS.setInt(1, v.getPs());
         	pS.setInt(2,v.getColorCode());
         	pS.setString(3, v.getBrand());
         	pS.setInt(4, v.getPrice());
-        	
-        	double beforeExecution= System.nanoTime();
-            pS.executeUpdate();
-            double afterExecution= System.nanoTime();
-            timeDifference= timeDifference+ (afterExecution-beforeExecution);
+        	pS.setString(5, v.getExtraEquipment());
+        	conn.setAutoCommit(false);
+        	pS.executeUpdate();
         }
+    	double beforeExecution= System.nanoTime();
+        conn.commit();
+        double afterExecution= System.nanoTime();
+        timeDifference= timeDifference+ (afterExecution-beforeExecution);
+        
 		return timeDifference/vehicles.length;
 	}
 	
 	public double deleteDatabase(Connection conn) throws SQLException {
-		
-		String statementDelete= "DROP TABLE IF EXISTS vehicles";
-		
+				
 		PreparedStatement dropTable = conn.prepareStatement(
 				String.format("DROP TABLE IF EXISTS vehicles"));
 	
