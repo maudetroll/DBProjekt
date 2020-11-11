@@ -16,6 +16,8 @@ public class MariaDBConnection {
 	
 	public static final String statement= "INSERT INTO vehicles(PS,Color,brand,price) VALUES (?,?,?,?)";
 	public MariaDB4jSpringService db= new MariaDB4jSpringService();
+	public Vehicle[] vehicles;
+	
 	public void connectToDatabase() {
         try {
             String url = "jdbc:mariadb://localhost:3306/vehicleDatabase";
@@ -72,8 +74,11 @@ public class MariaDBConnection {
 	public double createDatabase(Connection conn) throws SQLException {
 		
 		double timeDifference=0.0;
-		
-        for (Vehicles v: Utils.generateTestData()) {
+		vehicles = new Vehicle[2000];
+		for (int i = 0; i < vehicles.length; i++) {
+			vehicles[i] = new Vehicle();
+		}
+        for (Vehicle v: vehicles) {
         	PreparedStatement pS= conn.prepareStatement(statement);
         	pS.setInt(1, v.getPs());
         	pS.setInt(2,v.getColorCode());
@@ -99,9 +104,9 @@ public class MariaDBConnection {
 		
 		String statementUpdate= "UPDATE vehicles SET PS = ?, Color = ?, brand = ?, price=?";
 		
-		ArrayList<Vehicles> list= Utils.generateTestData();
+	
 		
-        for (Vehicles v: list) {
+        for (Vehicle v: vehicles) {
         	PreparedStatement pS= conn.prepareStatement(statementUpdate);
         	pS.setInt(1, v.getPs());
         	pS.setInt(2,v.getColorCode());
@@ -113,7 +118,7 @@ public class MariaDBConnection {
             double afterExecution= System.nanoTime();
             timeDifference= timeDifference+ (afterExecution-beforeExecution);
         }
-		return timeDifference/list.size();
+		return timeDifference/vehicles.length;
 	}
 	
 	public double deleteDatabase(Connection conn) throws SQLException {

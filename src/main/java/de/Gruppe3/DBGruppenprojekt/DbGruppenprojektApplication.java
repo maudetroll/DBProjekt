@@ -1,10 +1,5 @@
 package de.Gruppe3.DBGruppenprojekt;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-
-import com.mongodb.client.MongoClient;
-import de.Gruppe3.DBGruppenprojekt.mongodb.VehiclesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,7 +11,7 @@ import ch.vorburger.exec.ManagedProcessException;
 public class DbGruppenprojektApplication implements CommandLineRunner {
 
 	@Autowired
-	private VehiclesRepository vehiclesRepository;
+	private MongoDBRepository vehiclesRepository;
 
 	public static void main(String[] args) throws ManagedProcessException, InterruptedException {
 		SpringApplication.run(DbGruppenprojektApplication.class, args);
@@ -24,72 +19,51 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		// Vehicles erstellen
+		Vehicle[] vehicles = new Vehicle[2000];
+		for (int i = 0; i < vehicles.length; i++) {
+			vehicles[i] = new Vehicle();
+		}
+
 		vehiclesRepository.deleteAll();
-		//CRUD Implementierung
-		//Create
-		vehiclesRepository.save(new Vehicles("1"));
-
-		//Read
-		Vehicles testVehicle = vehiclesRepository.findById("1");
-
-		//Update
+		// CRUD Implementierung
+		// Create
+		double beforeExecution = System.nanoTime();
+		vehiclesRepository.save(new Vehicle("1"));
+		double afterExecution = System.nanoTime();
+		System.out.println("*********************************************");
+		System.out.println("CREATE");
+		System.out.println("*********************************************");
+		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
+				
+		// Read
+		beforeExecution = System.nanoTime();
+		Vehicle testVehicle = vehiclesRepository.findById("1");
+		afterExecution = System.nanoTime();
+		System.out.println("*********************************************");
+		System.out.println("READ");
+		System.out.println("*********************************************");
+		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
+		
+		// Update
 		testVehicle.ps = 1000;
 		vehiclesRepository.save(testVehicle);
 
-		//Delete
+		// Delete
 		vehiclesRepository.delete(testVehicle);
 
+		
+		 MariaDBConnection mariaDBConn= new MariaDBConnection();
+		 mariaDBConn.startDB();
+		 mariaDBConn.connectToDatabase();
 
-		//Performance Messung
-		//Alle Vehicles droppen
-		vehiclesRepository.deleteAll();
+		// killt die DB
+			Thread.sleep(100);
+		 mariaDBConn.stopDB();
 
-		//Vehicles erstellen
-		Vehicles[] vehicles = new Vehicles[2000];
-		for (int i = 0; i < vehicles.length; i++) {
-			vehicles[i] = new Vehicles();
-		}
-
-		long startTime = System.nanoTime();
-
-		for (Vehicles vehicle : vehicles) {
-			vehiclesRepository.save(vehicle);
-		}
-
-		long endTime = System.nanoTime() - startTime;
-
-		System.out.println("MongoDB hat "+ vehicles.length + " Einträge in " + endTime + " Nanosekunden angelegt");
-
-		startTime = System.nanoTime();
-		vehiclesRepository.findAll();
-		endTime = System.nanoTime() - startTime;
-
-		System.out.println("MongoDB hat "+ vehicles.length + " Einträge in " + endTime + " Nanosekunden ausgelesen");
+			
 	}
 
-
-	//	MariaDBConnection mariaDBConn= new MariaDBConnection();
-	//	mariaDBConn.startDB();
-	//	mariaDBConn.connectToDatabase();
-		
-		
-		
-		// killt die DB
-//		Thread.sleep(100000);
-	//	mariaDBConn.stopDB();
-
-//		MongoDBConnection md = new MongoDBConnection();
-//		try {
-//			md.connect();
-//		} catch (UnknownHostException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	
-
-
 
 }

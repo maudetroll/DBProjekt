@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.UUID;
 
 @Document(collection = "Vehicles")
-public class Vehicles {
+public class Vehicle {
 	@Id
 	public String id;
 	public int ps;
@@ -14,14 +14,14 @@ public class Vehicles {
 	public String brand;
 	public int price;
 
-	public Vehicles() {
+	public Vehicle() {
 		this.id = UUID.randomUUID().toString();
 		this.ps = (int) (Math.random() * 99 + 1);
 		this.colorCode = (int) (Math.random() * 9 + 1);
 		this.brand = "VW";
 		this.price = (int) (Math.random() * 19999 + 1);
 	}
-	public Vehicles(String id) {
+	public Vehicle(String id) {
 		this.id = id;
 	}
 
