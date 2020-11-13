@@ -1,5 +1,6 @@
 package de.Gruppe3.DBGruppenprojekt;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,33 +22,19 @@ public class MariaDBConnection {
 	private String url = "jdbc:mariadb://localhost:3306/vehicleDatabase";
 	private String user = "root";
 	private String password = "";
-	//public Vehicle[] vehicles;
+	private TextFileWriter results;
 	
-	public void connectToDatabase(Vehicle[] vehicle,Connection conn) throws SQLException {
+	public MariaDBConnection(TextFileWriter results) {
+		this.results= results;
+	}
+	
+	public void connectToDatabase(Vehicle[] vehicle,Connection conn) throws SQLException, IOException {
 
-		System.out.println("*********************************************");
-		System.out.println("Datenbank wird erstellt, Create Operation");
-		System.out.println("*********************************************");
-		double timeToCreate = insertData(conn, vehicle);
-		System.out.println("Ergebnis:" + timeToCreate + " Nanosekunden");
-		System.out.println("");
-		System.out.println("*********************************************");
-		System.out.println("Datenbank wird gelesen");
-		System.out.println("*********************************************");
-		System.out.println("");
-		double timeToRead = readDatabase(conn, vehicle);
-		System.out.println("Ergebnis:" + timeToRead + " Nanosekunden");
-		System.out.println("*********************************************");
-
+		insertData(conn, vehicle);
+		readDatabase(conn, vehicle);
 		if (vehicle.length < 1) {
-			System.out.println("Datenbank wird geupdatet");
-			System.out.println("*********************************************");
 			updateDatabase(conn, vehicle);
 		}
-
-		System.out.println("*********************************************");
-		System.out.println("Datenbank wird gelöscht");
-		System.out.println("*********************************************");
 		deleteDatabase(conn);
 
 }
@@ -67,7 +54,7 @@ public class MariaDBConnection {
 		db.stop();
 	}
 	
-	public double insertData(Connection conn,Vehicle [] vehicles) throws SQLException {
+	public double insertData(Connection conn,Vehicle [] vehicles) throws SQLException, IOException {
 		
 		double timeDifference=0.0;
 
@@ -89,10 +76,11 @@ public class MariaDBConnection {
         double afterExecution= System.nanoTime();
         timeDifference= timeDifference+ (afterExecution-beforeExecution);
         
+        results.appendData("CREATE", vehicles.length, (Double) timeDifference);
 		return (Double) timeDifference;
 	}
 	
-	public double readDatabase(Connection conn,Vehicle [] vehicles) throws SQLException {
+	public double readDatabase(Connection conn,Vehicle [] vehicles) throws SQLException, IOException {
 		Statement statement= conn.createStatement();
 
 		double beforeExecution= System.nanoTime();
@@ -105,13 +93,12 @@ public class MariaDBConnection {
 			}
 			System.out.println(rs.getString(6));
 		}
-		
-		return (Double) afterExecution-beforeExecution;
+		double timeDifference=(Double) afterExecution-beforeExecution;
+		results.appendData("READ", vehicles.length, (Double) timeDifference);
+		return timeDifference;
 	}
 	
 	public void updateDatabase(Connection conn,Vehicle [] vehicles) throws SQLException {
-		
-		double timeDifference=0.0;
 		
 		String statementUpdate= "UPDATE vehicles SET PS = ?, Color = ?, brand = ?, price=?, extraequipment=?";
 				

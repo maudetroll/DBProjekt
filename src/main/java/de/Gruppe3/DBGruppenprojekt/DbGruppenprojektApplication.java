@@ -1,5 +1,6 @@
 package de.Gruppe3.DBGruppenprojekt;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 	@Autowired
 	private MongoDBRepository vehiclesRepository;
 	private Vehicle testVehicle;
+	public TextFileWriter results;
 
 	public static void main(String[] args) throws ManagedProcessException, InterruptedException {
 		SpringApplication.run(DbGruppenprojektApplication.class, args);
@@ -25,7 +27,7 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		testData = createTestData();
-
+		results= new TextFileWriter();
 		deleteAll();
 
 		// CRUD Implementierung
@@ -33,21 +35,22 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 
 		// Test with 1000
 		create(testData.get(1));
-		read();
+		read(testData.get(1));
 		deleteAll();
 
 		// Test with 10000
 		create(testData.get(2));
-		read();
+		read(testData.get(2));
 		deleteAll();
 
 		// Test with 10000
 		create(testData.get(3));
-		read();
+		read(testData.get(3));
 		deleteAll();
 
 		// MariaDB
-		MariaDBConnection mariaDBConn = new MariaDBConnection();
+		results.writeHeaderMariaDB();
+		MariaDBConnection mariaDBConn = new MariaDBConnection(results);
 		mariaDBConn.startDB();
 		Connection conn = mariaDBConn.connectToDatabase();
 
@@ -55,15 +58,17 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 			mariaDBConn.connectToDatabase(v, conn);
 		}
 
+		results.closeWriter();
 		// killt die DB
 		Thread.sleep(1000000);
 		mariaDBConn.stopDB();
+		
 
 	}
 
-	public void crude() {
+	public void crude() throws IOException {
 		create(testData.get(0));
-		read();
+		read(testData.get(0));
 		update();
 		delete();
 		deleteAll();
@@ -73,25 +78,19 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 		vehiclesRepository.deleteAll();
 	}
 
-	public void create(Vehicle[] vehicles) {
+	public void create(Vehicle[] vehicles) throws IOException {
 		
 		double beforeExecution = System.nanoTime();
 		vehiclesRepository.save(new Vehicle("1"));
 		double afterExecution = System.nanoTime();
-		System.out.println("*********************************************");
-		System.out.println("CREATE");
-		System.out.println("*********************************************");
-		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
+		results.appendData("CREATE", vehicles.length, (Double) afterExecution - beforeExecution);
 	}
 
-	public void read() {
+	public void read(Vehicle[] vehicles) throws IOException {
 		double beforeExecution = System.nanoTime();
 		testVehicle = vehiclesRepository.findById("1");
 		double afterExecution = System.nanoTime();
-		System.out.println("*********************************************");
-		System.out.println("READ");
-		System.out.println("*********************************************");
-		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
+		results.appendData("READ", vehicles.length, (Double) afterExecution - beforeExecution);
 	}
 
 	public void update() {

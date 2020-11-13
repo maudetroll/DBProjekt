@@ -14,20 +14,29 @@ public class TextFileWriter {
 	
 	public TextFileWriter() throws IOException {
 		String header = "Zeiten der CRUD-Operationen";
+		String mariaDB = "Zeiten der MongoDB";
 		if(!resource.isFile()) {
 			resource.getFile().createNewFile();
 		}
 		bufferedWriter= new BufferedWriter(new FileWriter(resource.getFile()));
 		bufferedWriter.write(header);
+		bufferedWriter.newLine();
+		bufferedWriter.write(mariaDB);
 	}
 	
-	public void appendData(String data) throws IOException {
+	public void appendData(String operation, int length, double time) throws IOException {
 		bufferedWriter.newLine();
-		bufferedWriter.append(data);
+		bufferedWriter.append(operation+ " Anzahl: "+length+ " Dauer: "+ time +" Nanosekunden");
 	}
 	
 	public void closeWriter() throws IOException {
 		bufferedWriter.close();
 		System.out.println("Hier ist die Datei gespeichert "+ resource.getFile().toURI().toString());
+	}
+	
+	public void writeHeaderMariaDB() throws IOException {
+		String mariaDB= "Zeiten der MariaDB";
+		bufferedWriter.append("\n");
+		bufferedWriter.append(mariaDB);
 	}
 }
