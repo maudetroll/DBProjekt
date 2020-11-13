@@ -28,12 +28,11 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 		MariaDBConnection mariaDBConn= new MariaDBConnection();
 		mariaDBConn.startDB();
 		
-		for(Vehicle[] v: testData)
+		for(Vehicle[] v: testData) {
 		mariaDBConn.connectToDatabase(v);
-
-		// killt die DB
-		Thread.sleep(1000000);
-		mariaDBConn.stopDB();
+		}
+		
+		
 		
 		
 		
@@ -50,15 +49,10 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 		// Delete
 		deleteSelectedEntry();
 
-		
-		 MariaDBConnection mariaDBConn= new MariaDBConnection();
-		 mariaDBConn.startDB();
-		 mariaDBConn.connectToDatabase();
-
+			 
 		// killt die DB
 			Thread.sleep(1000000);
-		 mariaDBConn.stopDB();
-
+			mariaDBConn.stopDB();
 			
 	}
 	
@@ -98,11 +92,6 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 	
 	public void deleteSelectedEntry() {
 		vehiclesRepository.delete(testVehicle);
-	}
-	
-	
-
-	
 	}
 	
 	public ArrayList<Vehicle[]> createTestData(){

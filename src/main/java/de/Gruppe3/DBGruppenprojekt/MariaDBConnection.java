@@ -79,7 +79,7 @@ public class MariaDBConnection {
 		
 		double timeDifference=0.0;
 
-		vehicles[1].setExtraEquipment("SL AMG 63");
+		vehicles[0].setExtraEquipment("SL AMG 63");
 
         for (Vehicle v: vehicles) {
         	PreparedStatement pS= conn.prepareStatement(statement);
