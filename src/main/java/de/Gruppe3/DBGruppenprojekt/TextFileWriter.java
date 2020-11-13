@@ -4,15 +4,21 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
 public class TextFileWriter {
 
 	public BufferedWriter bufferedWriter;
+	public Resource resource = new ClassPathResource("result.txt");
 	
-	public void writeData() throws IOException {
-		String str = "Zeiten der Crud-Operationen";
-		String fileName= "";
-		bufferedWriter= new BufferedWriter(new FileWriter(fileName));
-		bufferedWriter.write(str);
+	public TextFileWriter() throws IOException {
+		String header = "Zeiten der CRUD-Operationen";
+		if(!resource.isFile()) {
+			resource.getFile().createNewFile();
+		}
+		bufferedWriter= new BufferedWriter(new FileWriter(resource.getFile()));
+		bufferedWriter.write(header);
 	}
 	
 	public void appendData(String data) throws IOException {
@@ -22,5 +28,6 @@ public class TextFileWriter {
 	
 	public void closeWriter() throws IOException {
 		bufferedWriter.close();
+		System.out.println("Hier ist die Datei gespeichert "+ resource.getFile().toURI().toString());
 	}
 }
