@@ -16,6 +16,7 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 
 	@Autowired
 	private MongoDBRepository vehiclesRepository;
+	private Vehicle testVehicle;
 
 	public static void main(String[] args) throws ManagedProcessException, InterruptedException {
 		SpringApplication.run(DbGruppenprojektApplication.class, args);
@@ -25,22 +26,48 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		ArrayList<Vehicle[]> testData= createTestData();
-		Connection conn = DriverManager.getConnection(url,user,password);
+		
 		MariaDBConnection mariaDBConn= new MariaDBConnection();
 		mariaDBConn.startDB();
+		Connection conn= mariaDBConn.connectToDatabase();
 		
 		for(Vehicle[] v: testData) {
-			mariaDBConn.connectToDatabase(v);
+			mariaDBConn.connectToDatabase(v,conn);
 		}
-		// killt die DB
-		Thread.sleep(1000000);
-		mariaDBConn.stopDB();
+
+	
 		
-		
-		
-		vehiclesRepository.deleteAll();
+				
 		// CRUD Implementierung
 		// Create
+		create();
+				
+		// Read
+		read();
+		
+		// Update
+		update();
+
+		// Delete
+		deleteSelectedEntry();
+
+			 
+		// killt die DB
+			Thread.sleep(1000000);
+			mariaDBConn.stopDB();
+			
+	}
+	
+	
+	
+	
+	
+	
+	public void delete() {
+		vehiclesRepository.deleteAll();
+	}
+	
+	public void create() {
 		double beforeExecution = System.nanoTime();
 		vehiclesRepository.save(new Vehicle("1"));
 		double afterExecution = System.nanoTime();
@@ -48,27 +75,25 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 		System.out.println("CREATE");
 		System.out.println("*********************************************");
 		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
-				
-		// Read
-		beforeExecution = System.nanoTime();
-		Vehicle testVehicle = vehiclesRepository.findById("1");
-		afterExecution = System.nanoTime();
+	}
+	
+	public void read() {
+		double beforeExecution = System.nanoTime();
+		testVehicle = vehiclesRepository.findById("1");
+		double afterExecution = System.nanoTime();
 		System.out.println("*********************************************");
 		System.out.println("READ");
 		System.out.println("*********************************************");
 		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
-		
-		// Update
+	}
+	
+	public void update() {
 		testVehicle.ps = 1000;
 		vehiclesRepository.save(testVehicle);
-
-		// Delete
+	}
+	
+	public void deleteSelectedEntry() {
 		vehiclesRepository.delete(testVehicle);
-
-		
-
-
-			
 	}
 	
 	public ArrayList<Vehicle[]> createTestData(){

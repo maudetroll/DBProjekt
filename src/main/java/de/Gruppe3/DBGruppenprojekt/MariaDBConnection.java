@@ -18,50 +18,38 @@ public class MariaDBConnection {
 	
 	public static final String statement= "INSERT INTO vehicles(PS,Color,brand,price,extraequipment) VALUES (?,?,?,?,?)";
 	public MariaDB4jSpringService db= new MariaDB4jSpringService();
+	private String url = "jdbc:mariadb://localhost:3306/vehicleDatabase";
+	private String user = "root";
+	private String password = "";
 	//public Vehicle[] vehicles;
 	
-	public void connectToDatabase(Vehicle[] vehicle) {
-        try {
-            String url = "jdbc:mariadb://localhost:3306/vehicleDatabase";
-            String user = "root";
-            String password = "";
-            try {
-                System.out.println("connected");
-                
-                System.out.println("*********************************************");
-                System.out.println("Datenbank wird erstellt, Create Operation");
-                System.out.println("*********************************************");
-                double timeToCreate=createDatabase(conn,vehicle);
-                System.out.println("Ergebnis:"+ timeToCreate+ " Nanosekunden");
-                System.out.println("");
-                System.out.println("*********************************************");
-                System.out.println("Datenbank wird gelesen");
-                System.out.println("*********************************************");
-                System.out.println("");
-                double timeToRead= readDatabase(conn,vehicle);
-                System.out.println("Ergebnis:"+ timeToRead+ " Nanosekunden");
-                System.out.println("*********************************************");
-                
-                if(vehicle.length<1) {
-                    System.out.println("Datenbank wird geupdatet");
-                    System.out.println("*********************************************");
-                    double timeToUpdate=updateDatabase(conn,vehicle);
-                    System.out.println("Ergebnis:"+ timeToUpdate+ " Nanosekunden");
-                    System.out.println("");
-                }
+	public void connectToDatabase(Vehicle[] vehicle,Connection conn) throws SQLException {
 
-                System.out.println("*********************************************");
-                System.out.println("Datenbank wird gelöscht");
-                System.out.println("*********************************************");
-                double timeToDelete=deleteDatabase(conn);
-                System.out.println("Ergebnis:"+ timeToDelete+ " Nanosekunden");
-                
+		System.out.println("*********************************************");
+		System.out.println("Datenbank wird erstellt, Create Operation");
+		System.out.println("*********************************************");
+		double timeToCreate = insertData(conn, vehicle);
+		System.out.println("Ergebnis:" + timeToCreate + " Nanosekunden");
+		System.out.println("");
+		System.out.println("*********************************************");
+		System.out.println("Datenbank wird gelesen");
+		System.out.println("*********************************************");
+		System.out.println("");
+		double timeToRead = readDatabase(conn, vehicle);
+		System.out.println("Ergebnis:" + timeToRead + " Nanosekunden");
+		System.out.println("*********************************************");
 
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        
+		if (vehicle.length < 1) {
+			System.out.println("Datenbank wird geupdatet");
+			System.out.println("*********************************************");
+			updateDatabase(conn, vehicle);
+		}
+
+		System.out.println("*********************************************");
+		System.out.println("Datenbank wird gelöscht");
+		System.out.println("*********************************************");
+		deleteDatabase(conn);
+
 }
 	public void startDB() throws ManagedProcessException {
 		
@@ -79,11 +67,11 @@ public class MariaDBConnection {
 		db.stop();
 	}
 	
-	public double createDatabase(Connection conn,Vehicle [] vehicles) throws SQLException {
+	public double insertData(Connection conn,Vehicle [] vehicles) throws SQLException {
 		
 		double timeDifference=0.0;
 
-		vehicles[1].setExtraEquipment("SL AMG 63");
+		vehicles[0].setExtraEquipment("SL AMG 63");
 
         for (Vehicle v: vehicles) {
         	PreparedStatement pS= conn.prepareStatement(statement);
@@ -121,7 +109,7 @@ public class MariaDBConnection {
 		return (Double) afterExecution-beforeExecution;
 	}
 	
-	public double updateDatabase(Connection conn,Vehicle [] vehicles) throws SQLException {
+	public void updateDatabase(Connection conn,Vehicle [] vehicles) throws SQLException {
 		
 		double timeDifference=0.0;
 		
@@ -137,28 +125,20 @@ public class MariaDBConnection {
         	conn.setAutoCommit(false);
         	pS.executeUpdate();
         }
-    	double beforeExecution= System.nanoTime();
         conn.commit();
-        double afterExecution= System.nanoTime();
-        timeDifference= timeDifference+ (afterExecution-beforeExecution);
-        
-		return timeDifference/vehicles.length;
+
 	}
 	
-	public double deleteDatabase(Connection conn) throws SQLException {
+	public void deleteDatabase(Connection conn) throws SQLException {
 				
 		PreparedStatement dropTable = conn.prepareStatement(
-				String.format("DROP TABLE IF EXISTS vehicles"));
-	
-    	double beforeExecution= System.nanoTime();
-    	try {
+				String.format("DELETE FROM vehicles"));
+	    	try {
 			dropTable.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        double afterExecution= System.nanoTime();
-		
-		return (Double) afterExecution/beforeExecution;
+
 	}
 	
 	
@@ -170,6 +150,10 @@ public class MariaDBConnection {
         timeDifference= timeDifference+ (afterExecution-beforeExecution);
 		return timeDifference;
 		
+	}
+	
+	public Connection connectToDatabase() throws SQLException {
+		return DriverManager.getConnection(url,user,password);
 	}
 
 
