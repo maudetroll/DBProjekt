@@ -25,7 +25,7 @@ public class MariaDBConnection {
             String url = "jdbc:mariadb://localhost:3306/vehicleDatabase";
             String user = "root";
             String password = "";
-            try (Connection conn = DriverManager.getConnection(url,user,password)){
+            try {
                 System.out.println("connected");
                 
                 System.out.println("*********************************************");
@@ -41,11 +41,15 @@ public class MariaDBConnection {
                 double timeToRead= readDatabase(conn,vehicle);
                 System.out.println("Ergebnis:"+ timeToRead+ " Nanosekunden");
                 System.out.println("*********************************************");
-                System.out.println("Datenbank wird geupdatet");
-                System.out.println("*********************************************");
-                double timeToUpdate=updateDatabase(conn,vehicle);
-                System.out.println("Ergebnis:"+ timeToUpdate+ " Nanosekunden");
-                System.out.println("");
+                
+                if(vehicle.length<1) {
+                    System.out.println("Datenbank wird geupdatet");
+                    System.out.println("*********************************************");
+                    double timeToUpdate=updateDatabase(conn,vehicle);
+                    System.out.println("Ergebnis:"+ timeToUpdate+ " Nanosekunden");
+                    System.out.println("");
+                }
+
                 System.out.println("*********************************************");
                 System.out.println("Datenbank wird gelöscht");
                 System.out.println("*********************************************");
@@ -167,4 +171,6 @@ public class MariaDBConnection {
 		return timeDifference;
 		
 	}
+
+
 }

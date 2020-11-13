@@ -1,5 +1,7 @@
 package de.Gruppe3.DBGruppenprojekt;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +25,13 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		ArrayList<Vehicle[]> testData= createTestData();
-
+		Connection conn = DriverManager.getConnection(url,user,password);
 		MariaDBConnection mariaDBConn= new MariaDBConnection();
 		mariaDBConn.startDB();
 		
-		for(Vehicle[] v: testData)
-		mariaDBConn.connectToDatabase(v);
-
+		for(Vehicle[] v: testData) {
+			mariaDBConn.connectToDatabase(v);
+		}
 		// killt die DB
 		Thread.sleep(1000000);
 		mariaDBConn.stopDB();
