@@ -18,9 +18,9 @@ public class MariaDBConnection {
 	
 	public static final String statement= "INSERT INTO vehicles(PS,Color,brand,price,extraequipment) VALUES (?,?,?,?,?)";
 	public MariaDB4jSpringService db= new MariaDB4jSpringService();
-	public Vehicle[] vehicles;
+	//public Vehicle[] vehicles;
 	
-	public void connectToDatabase() {
+	public void connectToDatabase(Vehicle[] vehicle) {
         try {
             String url = "jdbc:mariadb://localhost:3306/vehicleDatabase";
             String user = "root";
@@ -31,26 +31,26 @@ public class MariaDBConnection {
                 System.out.println("*********************************************");
                 System.out.println("Datenbank wird erstellt, Create Operation");
                 System.out.println("*********************************************");
-                double timeToCreate=createDatabase(conn);
+                double timeToCreate=createDatabase(conn,vehicle);
                 System.out.println("Ergebnis:"+ timeToCreate+ " Nanosekunden");
                 System.out.println("");
                 System.out.println("*********************************************");
                 System.out.println("Datenbank wird gelesen");
                 System.out.println("*********************************************");
                 System.out.println("");
-                double timeToRead= readDatabase(conn);
+                double timeToRead= readDatabase(conn,vehicle);
                 System.out.println("Ergebnis:"+ timeToRead+ " Nanosekunden");
                 System.out.println("*********************************************");
                 System.out.println("Datenbank wird geupdatet");
                 System.out.println("*********************************************");
-                double timeToUpdate=updateDatabase(conn);
+                double timeToUpdate=updateDatabase(conn,vehicle);
                 System.out.println("Ergebnis:"+ timeToUpdate+ " Nanosekunden");
                 System.out.println("");
                 System.out.println("*********************************************");
                 System.out.println("Datenbank wird gelöscht");
                 System.out.println("*********************************************");
-                //double timeToDelete=deleteDatabase(conn);
-                //System.out.println("Ergebnis:"+ timeToDelete+ " Nanosekunden");
+                double timeToDelete=deleteDatabase(conn);
+                System.out.println("Ergebnis:"+ timeToDelete+ " Nanosekunden");
                 
 
             }
@@ -75,15 +75,11 @@ public class MariaDBConnection {
 		db.stop();
 	}
 	
-	public double createDatabase(Connection conn) throws SQLException {
+	public double createDatabase(Connection conn,Vehicle [] vehicles) throws SQLException {
 		
 		double timeDifference=0.0;
-		vehicles = new Vehicle[2000];
-		
-		for (int i = 0; i < vehicles.length; i++) {
-			vehicles[i] = new Vehicle();
-		}
-		vehicles[1336].setExtraEquipment("SL AMG 63");
+
+		vehicles[1].setExtraEquipment("SL AMG 63");
 
         for (Vehicle v: vehicles) {
         	PreparedStatement pS= conn.prepareStatement(statement);
@@ -104,7 +100,7 @@ public class MariaDBConnection {
 		return (Double) timeDifference;
 	}
 	
-	public double readDatabase(Connection conn) throws SQLException {
+	public double readDatabase(Connection conn,Vehicle [] vehicles) throws SQLException {
 		Statement statement= conn.createStatement();
 
 		double beforeExecution= System.nanoTime();
@@ -121,7 +117,7 @@ public class MariaDBConnection {
 		return (Double) afterExecution-beforeExecution;
 	}
 	
-	public double updateDatabase(Connection conn) throws SQLException {
+	public double updateDatabase(Connection conn,Vehicle [] vehicles) throws SQLException {
 		
 		double timeDifference=0.0;
 		

@@ -1,5 +1,7 @@
 package de.Gruppe3.DBGruppenprojekt;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,13 +22,20 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// Vehicles erstellen
-		Vehicle[] vehicles = new Vehicle[2000];
-		for (int i = 0; i < vehicles.length; i++) {
-			vehicles[i] = new Vehicle();
-		}
-		//deleteAll
-		delete();
+
+		ArrayList<Vehicle[]> testData= createTestData();
+
+		MariaDBConnection mariaDBConn= new MariaDBConnection();
+		mariaDBConn.startDB();
+		
+		for(Vehicle[] v: testData)
+		mariaDBConn.connectToDatabase(v);
+
+		// killt die DB
+		Thread.sleep(1000000);
+		mariaDBConn.stopDB();
+		
+		
 		
 		// CRUD Implementierung
 		// Create
@@ -92,7 +101,39 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 	}
 	
 	
+
 	
+	}
+	
+	public ArrayList<Vehicle[]> createTestData(){
+		// Vehicles erstellen
+		ArrayList <Vehicle[]> vehicleList= new ArrayList<>();
+		Vehicle[] vehicle = new Vehicle[1];
+		for (int i = 0; i < vehicle.length; i++) {
+			vehicle[i] = new Vehicle();
+		}
+		vehicleList.add(vehicle);
+		
+		Vehicle[] vehiclesLow = new Vehicle[1000];
+		for (int i = 0; i < vehiclesLow.length; i++) {
+			vehiclesLow[i] = new Vehicle();
+		}
+		vehicleList.add(vehiclesLow);
+		
+		Vehicle[] vehiclesMid = new Vehicle[10000];
+		for (int i = 0; i < vehiclesMid.length; i++) {
+			vehiclesMid[i] = new Vehicle();
+		}
+		vehicleList.add(vehiclesMid);
+		
+		Vehicle[] vehiclesHigh = new Vehicle[100000];
+		for (int i = 0; i < vehiclesHigh.length; i++) {
+			vehiclesHigh[i] = new Vehicle();
+		}
+		vehicleList.add(vehiclesHigh);
+		
+		return vehicleList;
+	}
 
 	
 
