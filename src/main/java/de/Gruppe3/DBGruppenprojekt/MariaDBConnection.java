@@ -91,7 +91,7 @@ public class MariaDBConnection {
 			if (!rs.getString(6).equals("SL AMG 63")) {
 				System.err.println("NICHT GEFUNDEN");
 			}
-			System.out.println(rs.getString(6));
+			System.out.println("Eintrag gefunden: "+ rs.getString(6));
 		}
 		double timeDifference=(Double) afterExecution-beforeExecution;
 		results.appendData("READ", vehicles.length, (Double) timeDifference);
