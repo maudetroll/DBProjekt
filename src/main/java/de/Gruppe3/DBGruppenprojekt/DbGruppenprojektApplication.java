@@ -12,6 +12,7 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 
 	@Autowired
 	private MongoDBRepository vehiclesRepository;
+	private Vehicle testVehicle;
 
 	public static void main(String[] args) throws ManagedProcessException, InterruptedException {
 		SpringApplication.run(DbGruppenprojektApplication.class, args);
@@ -24,33 +25,21 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 		for (int i = 0; i < vehicles.length; i++) {
 			vehicles[i] = new Vehicle();
 		}
-
-		vehiclesRepository.deleteAll();
+		//deleteAll
+		delete();
+		
 		// CRUD Implementierung
 		// Create
-		double beforeExecution = System.nanoTime();
-		vehiclesRepository.save(new Vehicle("1"));
-		double afterExecution = System.nanoTime();
-		System.out.println("*********************************************");
-		System.out.println("CREATE");
-		System.out.println("*********************************************");
-		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
+		create();
 				
 		// Read
-		beforeExecution = System.nanoTime();
-		Vehicle testVehicle = vehiclesRepository.findById("1");
-		afterExecution = System.nanoTime();
-		System.out.println("*********************************************");
-		System.out.println("READ");
-		System.out.println("*********************************************");
-		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
+		read();
 		
 		// Update
-		testVehicle.ps = 1000;
-		vehiclesRepository.save(testVehicle);
+		update();
 
 		// Delete
-		vehiclesRepository.delete(testVehicle);
+		deleteSelectedEntry();
 
 		
 		 MariaDBConnection mariaDBConn= new MariaDBConnection();
@@ -63,6 +52,47 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 
 			
 	}
+	
+	
+	
+	
+	
+	
+	public void delete() {
+		vehiclesRepository.deleteAll();
+	}
+	
+	public void create() {
+		double beforeExecution = System.nanoTime();
+		vehiclesRepository.save(new Vehicle("1"));
+		double afterExecution = System.nanoTime();
+		System.out.println("*********************************************");
+		System.out.println("CREATE");
+		System.out.println("*********************************************");
+		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
+	}
+	
+	public void read() {
+		double beforeExecution = System.nanoTime();
+		testVehicle = vehiclesRepository.findById("1");
+		double afterExecution = System.nanoTime();
+		System.out.println("*********************************************");
+		System.out.println("READ");
+		System.out.println("*********************************************");
+		System.out.println("Ergebnis:" + (afterExecution - beforeExecution));
+	}
+	
+	public void update() {
+		testVehicle.ps = 1000;
+		vehiclesRepository.save(testVehicle);
+	}
+	
+	public void deleteSelectedEntry() {
+		vehiclesRepository.delete(testVehicle);
+	}
+	
+	
+	
 
 	
 
