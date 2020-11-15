@@ -61,8 +61,6 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 		results.closeWriter();
 
 		mariaDBConn.stopDB();
-		
-
 	}
 
 	public void crude() throws IOException {
@@ -78,9 +76,11 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 	}
 
 	public void create(Vehicle[] vehicles) throws IOException {
-		
+		vehiclesRepository.save(new Vehicle("1"));	
 		double beforeExecution = System.nanoTime();
-		vehiclesRepository.save(new Vehicle("1"));
+		for (int i = 0; i < vehicles.length; i++) {
+			vehiclesRepository.save(new Vehicle());			
+		}
 		double afterExecution = System.nanoTime();
 		results.appendData("CREATE", vehicles.length, (Double) afterExecution - beforeExecution);
 	}
