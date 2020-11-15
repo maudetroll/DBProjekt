@@ -1,0 +1,19 @@
+Zeiten der CRUD-Operationen
+Zeiten der MongoDB
+CREATE Anzahl: 1 Dauer: 3.07433E7 Nanosekunden
+READ Anzahl: 1 Dauer: 2.37509E7 Nanosekunden
+CREATE Anzahl: 1000 Dauer: 1038099.0 Nanosekunden
+READ Anzahl: 1000 Dauer: 807801.0 Nanosekunden
+CREATE Anzahl: 10000 Dauer: 718500.0 Nanosekunden
+READ Anzahl: 10000 Dauer: 765600.0 Nanosekunden
+CREATE Anzahl: 100000 Dauer: 660900.0 Nanosekunden
+READ Anzahl: 100000 Dauer: 684600.0 Nanosekunden
+Zeiten der MariaDB
+CREATE Anzahl: 1 Dauer: 861500.0 Nanosekunden
+READ Anzahl: 1 Dauer: 211800.0 Nanosekunden
+CREATE Anzahl: 1000 Dauer: 1006400.0 Nanosekunden
+READ Anzahl: 1000 Dauer: 466400.0 Nanosekunden
+CREATE Anzahl: 10000 Dauer: 2496500.0 Nanosekunden
+READ Anzahl: 10000 Dauer: 3246900.0 Nanosekunden
+CREATE Anzahl: 100000 Dauer: 1.73969E7 Nanosekunden
+READ Anzahl: 100000 Dauer: 3.0540401E7 Nanosekunden
