@@ -59,8 +59,7 @@ public class DbGruppenprojektApplication implements CommandLineRunner {
 		}
 
 		results.closeWriter();
-		// killt die DB
-		Thread.sleep(1000000);
+
 		mariaDBConn.stopDB();
 		
 
